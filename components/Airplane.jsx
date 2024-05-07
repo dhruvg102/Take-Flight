@@ -6,28 +6,33 @@ Command: npx gltfjsx@6.2.7 public/assets/models/airplane.glb
 
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
-import { Matrix4, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 
-export const planePosition = new Vector3(0, 3, 7);
 
-
-export const Airplane = ({...props}) => {
+export const Airplane = ({
+    color = "yellow",
+    name = "Player",
+    ...props
+}) => {
     // thanks to:
     // https://sketchfab.com/3d-models/vintage-toy-airplane-7de2ecbc0acb4b1886c3df3d196c366b
     const { nodes, materials } = useGLTF('models/airplane.glb');
-    const groupRef = useRef();
     const helixMeshRef = useRef();
+
+    useFrame(() => {
+        helixMeshRef.current.rotation.z -= 1.0;
+    });
 
     return (
         <>
-            <group ref={groupRef}>
-                <group {...props} dispose={null} scale={0.01} rotation-y={Math.PI}>
+                <group {...props} dispose={null} rotation-y={Math.PI}>
                     <mesh geometry={nodes.supports.geometry} material={materials['Material.004']} />
-                    <mesh geometry={nodes.chassis.geometry} material={materials['Material.005']} />
+                    {/* <mesh geometry={nodes.chassis.geometry} material={materials['Material.005']} /> */}
+                    <mesh geometry={nodes.chassis.geometry}>
+                        <meshStandardMaterial {...materials['Material.005']} color={color}/>
+                    </mesh>
                     <mesh geometry={nodes.helix.geometry} material={materials['Material.005']} ref={helixMeshRef} />
                 </group>
-            </group>
         </>
     )
 }

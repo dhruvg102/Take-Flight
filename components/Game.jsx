@@ -1,9 +1,15 @@
 import { Environment, PerspectiveCamera, OrbitControls } from "@react-three/drei"
 import { SphereEnv } from "./SphereEnv"
 import { Landscape } from "./Landscape"
+import { CharacterController } from "./CharacterController"
+import { useGameState } from "@/hooks/useGameState"
+import { myPlayer } from "playroomkit"
 import { Airplane } from "./Airplane"
 
 export const Game = () => {
+    
+    const {players, stage} = useGameState();
+    const me = myPlayer();
     return (
         <>
             <SphereEnv />
@@ -11,8 +17,21 @@ export const Game = () => {
             <PerspectiveCamera makeDefault position={[0, 10, 10]} />
             <OrbitControls target={[0, 0, 0]} />
             
-            <Airplane />
-            <Landscape />
+            
+
+            <>
+                {stage !== "lobby" && <Landscape />}
+                {players.map(({state, controls}) => (
+                    <CharacterController 
+                    key={state.id}
+                    state={state}
+                    controls={controls}
+                    player={me.id === state.id}
+                    position-y={3}
+                    />
+                    
+                ))}
+            </>
 
             <directionalLight
                 castShadow
